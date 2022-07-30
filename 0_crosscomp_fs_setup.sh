@@ -456,3 +456,16 @@ CROSS_COMPILE=${SL_TARGET}- x86_64_defconfig;
 make ARCH=${SL_ARCH} \
 CROSS_COMPILE=${SL_TARGET}-;
 
+make ARCH=${SL_ARCH} \
+  CROSS_COMPILE=${SL_TARGET}- \
+  INSTALL_MOD_PATH=${SL} modules_install;
+
+cp -v arch/x86/boot/bzImage ${SL}/boot/vmlinuz-4.19.253;
+cp -v System.map ${SL}/boot/System.map-4.19.253;
+cp -v .config ${SL}/boot/config-4.19.253;
+
+${SL}/cross-tools/bin/depmod.pl \
+  -F ${SL}/boot/System.map-4.19.253 \
+  -b ${SL}/lib/modules/4.19.253;
+
+
