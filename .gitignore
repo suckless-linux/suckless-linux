@@ -1,3 +1,6 @@
+# ignore tarballs dir
+tarballs/*
+
 # Prerequisites
 *.d
 
