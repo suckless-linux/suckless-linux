@@ -238,7 +238,7 @@ export RANLIB="${SL_TARGET}-ranlib";
 export READELF="${SL_TARGET}-readelf";
 export STRIP="${SL_TARGET}-strip";
 
-cd ${SL}/;
+#unneccessary?? cd ${SL}/;
 
 
 echo "===================================================================";
