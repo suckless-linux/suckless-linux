@@ -468,4 +468,71 @@ ${SL}/cross-tools/bin/depmod.pl \
   -F ${SL}/boot/System.map-4.19.253 \
   -b ${SL}/lib/modules/4.19.253;
 
+cd ../;
 
+
+echo "===================================================================";
+echo "decompressing CLFS-Bootscripts...";
+echo "===================================================================";
+
+tar -xf tarballs/clfs-embedded-bootscripts-1.0-pre5.tar.bz2;
+
+cd clfs-embedded-bootscripts-1.0-pre5;
+
+
+echo "===================================================================";
+echo "configuring and installing target environment...";
+echo "===================================================================";
+
+make DESTDIR ${SL}/ install-bootscripts;
+
+ln -sv ../rc.d/startup ${SL}/etc/init.d/rcS;
+
+echo "===================================================================";
+echo "installing zlib...";
+echo "===================================================================";
+
+cd ../;
+tar -xf tarballs/zlib-1.2.11.tar.gz;
+cd zlib-1.2.11/;
+
+sed -i 's/-O3/-Os/g' configure;
+./configure --prefix=/usr --shared;
+make && make DESTDIR=${SL}/ install;
+
+mv -v ${SL}/usr/lib/libz.so.* ${SL}/lib;
+ln -svf ../../lib/libz.so.1 ${SL}/usr/lib/libz.so;
+ln -svf ../../lib/libz.so.1 ${SL}/usr/lib/libz.so.1;
+ln -svf ../lib/libz.so.1 ${SL}/lib64/libz.so.1;
+
+
+echo "===================================================================";
+echo "Installing target image...";
+echo "===================================================================";
+
+cd ../;
+
+cp -rf ${SL}/ ${SL}-copy;
+rm -rfv ${SL}-copy/cross-tools;
+rm -rfv ${SL}-copy/usr/src/*;
+
+FILES="$(ls ${SL}-copy/usr/lib64/*.a)";
+for file in $FILES; do
+  rm -f $file;
+done;
+
+find ${SL}-copy/{,usr/}{bin,lib,sbin} -type f -exec sudo strip --strip-debug '{}' ';';
+find ${SL}-copy/{,usr/}lib64 -type f -exec sudo strip --strip-debug '{}' ';';
+
+sudo chown -R root:root ${SL}-copy;
+sudo chgrp 13 ${SL}-copy/var/run/utmp ${SL}-copy/var/log/lastlog;
+sudo mknod -m 0666 ${SL}-copy/dev/null c 1 3;
+sudo mknod -m 0600 ${SL}-copy/dev/console c 5 1;
+sudo chmod 4755 ${SL}-copy/bin/busybox;
+
+echo "===================================================================";
+echo "packaging OS-image...";
+echo "===================================================================";
+
+cd {SL}-copy/;
+sudo tar cfJ ../suckless-build-20223107-nightly.tar.xz *;
