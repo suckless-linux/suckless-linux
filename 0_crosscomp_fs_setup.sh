@@ -122,7 +122,7 @@ echo "===================================================================";
 echo "create /etc/issue file...";
 echo "===================================================================";
 cat > ${SL}/etc/issue<< "EOF"
-Suckless Linux 1.0
+Suckless Linux 1.1
 Kernel \r on \m
 
 EOF
@@ -222,8 +222,8 @@ set timeout=5
 
 set root=(hd0,1)
 
-menuentry "Suckless Linux 1.0" {
-        linux   /boot/vmlinuz-4.16.3 root=/dev/sda1 ro quiet
+menuentry "Suckless Linux 1.1" {
+        linux   /boot/vmlinuz-4.19.253 root=/dev/sda1 ro quiet
 }
 EOF
 
@@ -252,8 +252,8 @@ echo "===================================================================";
 echo "uncompressing linux tarball...";
 echo "===================================================================";
 
-tar -xf tarballs/linux-4.16.3.tar.xz;
-cd linux-4.16.3/;
+tar -xf tarballs/linux-4.19.253.tar.xz;
+cd linux-4.19.253/;
 
 echo "===================================================================";
 echo "installing kernel standard header files for the cross-compiler...";
@@ -438,9 +438,9 @@ echo "===================================================================";
 echo "Uncompressing linux kernel...";
 echo "===================================================================";
 
-tar -xf tarballs/linux-4.16.3.tar.xz;
+tar -xf tarballs/linux-4.19.253.tar.xz;
 
-cd linux-4.16.3/;
+cd linux-4.19.253/;
 
 
 echo "===================================================================";
@@ -453,7 +453,7 @@ cp -v /boot/config-$(uname -r) .config;
 #CROSS_COMPILE=${SL_TARGET}- x86_64_defconfig;
 
 make ARCH=${SL_ARCH} \
-CROSS_COMPILE=${SL_TARGET}- menuconfig;
+CROSS_COMPILE=${SL_TARGET}- allmodconfig #menuconfig;
 
 make ARCH=${SL_ARCH} \
 CROSS_COMPILE=${SL_TARGET}-;
@@ -537,4 +537,4 @@ echo "packaging OS-image...";
 echo "===================================================================";
 
 cd ${SL}-copy/;
-sudo tar cfJ ../suckless-build-20223107-nightly.tar.xz *;
+sudo tar cfJ ../suckless-build-20220108-nightly.tar.xz *;
