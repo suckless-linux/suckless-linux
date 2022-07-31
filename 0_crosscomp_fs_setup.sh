@@ -447,13 +447,13 @@ echo "===================================================================";
 echo "building linux kernel...";
 echo "===================================================================";
 
-cp -v /boot/config-$(uname -r) .config;
+#cp -v /boot/config-$(uname -r) .config;
 
 #make ARCH=${SL_ARCH} \
 #CROSS_COMPILE=${SL_TARGET}- x86_64_defconfig;
 
 make ARCH=${SL_ARCH} \
-CROSS_COMPILE=${SL_TARGET}- allmodconfig #menuconfig;
+CROSS_COMPILE=${SL_TARGET}- menuconfig #allmodconfig;
 
 make ARCH=${SL_ARCH} \
 CROSS_COMPILE=${SL_TARGET}-;
