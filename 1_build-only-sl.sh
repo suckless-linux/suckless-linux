@@ -1,13 +1,6 @@
 #!/bin/sh
 
 
-######################################
-# script for building suckless-linux #
-#         and cross-compiler         #
-######################################
-
-
-
 echo "===================================================================";
 echo "setting variables, creating environment...";
 echo "===================================================================";
@@ -17,6 +10,7 @@ export SL=~/Dokumente/suckless-linux/suckless;
 mkdir -pv ${SL};
 export LC_ALL=POSIX;
 export PATH=${SL}/cross-tools/bin:/bin:/usr/bin;
+
 
 echo "===================================================================";
 echo "create target filesystem structure...";
@@ -35,12 +29,6 @@ mkdir -pv ${SL}/usr/{,local/}share/man/man{1,2,3,4,5,6,7,8};
 for dir in ${SL}/usr{,/local}; do
   ln -sv share/{man,doc,info} ${dir}
 done;
-
-
-echo "===================================================================";
-echo "creating directory for cross-compilation toolchain...";
-echo "===================================================================";
-install -dv ${SL}/cross-tools{,/bin};
 
 
 echo "===================================================================";
@@ -235,164 +223,6 @@ echo "===================================================================";
 touch ${SL}/var/run/utmp ${SL}/var/log/{btmp,lastlog,wtmp};
 chmod -v 664 ${SL}/var/run/utmp ${SL}/var/log/lastlog;
 
-echo "===================================================================";
-echo "prepare for building cross-compiler...";
-echo "===================================================================";
-
-unset CFLAGS;
-unset CXXFLAGS;
-
-export SL_HOST=$(echo ${MACHTYPE} | sed "s/-[^-]*/-cross/");
-export SL_TARGET=x86_64-unknown-linux-gnu;
-export SL_CPU=k8;
-export SL_ARCH=$(echo ${SL_TARGET} | sed -e 's/-.*//' -e 's/i.86/i386/');
-export SL_ENDIAN=little;
-
-echo "===================================================================";
-echo "uncompressing linux tarball...";
-echo "===================================================================";
-
-tar -xf tarballs/linux-4.16.3.tar.xz;
-cd linux-4.16.3/;
-
-echo "===================================================================";
-echo "installing kernel standard header files for the cross-compiler...";
-echo "===================================================================";
-
-make mrproper;
-make ARCH=${SL_ARCH} headers_check && \
-make ARCH=${SL_ARCH} INSTALL_HDR_PATH=dest headers_install;
-cp -rv dest/include/* ${SL}/usr/include;
-
-cd ../;
-
-echo "===================================================================";
-echo "uncompressing binutils tarball...";
-echo "===================================================================";
-
-tar -xf tarballs/binutils-2.30.tar.xz;
-
-mkdir binutils-build;
-cd binutils-build/;
-
-echo "===================================================================";
-echo "building binutils...";
-echo "===================================================================";
-
-../binutils-2.30/configure --prefix=${SL}/cross-tools \
---target=${SL_TARGET} --with-sysroot=${SL} \
---disable-nls --enable-shared --disable-multilib;
-
-make configure-host && make;
-ln -sv lib ${SL}/cross-tools/lib64;
-make install;
-
-cp -v ../binutils-2.30/include/libiberty.h ${SL}/usr/include;
-
-
-echo "===================================================================";
-echo "Uncompressing gcc tarball...";
-echo "===================================================================";
-
-cd ../;
-
-tar -xf tarballs/gcc-7.3.0.tar.xz;
-
-echo "===================================================================";
-echo "uncompressing some dependencies...";
-echo "===================================================================";
-
-tar xjf tarballs/gmp-6.1.2.tar.bz2;
-mv gmp-6.1.2 gcc-7.3.0/gmp;
-tar xJf tarballs/mpfr-4.0.1.tar.xz;
-mv mpfr-4.0.1 gcc-7.3.0/mpfr;
-tar xzf tarballs/mpc-1.1.0.tar.gz;
-mv mpc-1.1.0 gcc-7.3.0/mpc;
-
-mkdir gcc-static;
-cd gcc-static/;
-
-echo "===================================================================";
-echo "building statically linked gcc...";
-echo "===================================================================";
-
-AR=ar LDFLAGS="-Wl,-rpath,${SL}/cross-tools/lib" \
-../gcc-7.3.0/configure --prefix=${SL}/cross-tools \
---build=${SL_HOST} --host=${SL_HOST} \
---target=${SL_TARGET} \
---with-sysroot=${SL}/target --disable-nls \
---disable-shared \
---with-mpfr-include=$(pwd)/../gcc-7.3.0/mpfr/src \
---with-mpfr-lib=$(pwd)/mpfr/src/.libs \
---without-headers --with-newlib --disable-decimal-float \
---disable-libgomp --disable-libmudflap --disable-libssp \
---disable-threads --enable-languages=c,c++ \
---disable-multilib --with-arch=${SL_CPU};
-
-make all-gcc all-target-libgcc && \
-make install-gcc install-target-libgcc;
-
-ln -vs libgcc.a `${SL_TARGET}-gcc -print-libgcc-file-name | sed 's/libgcc/&_eh/'`;
-
-
-echo "===================================================================";
-echo "uncompressing GLIBC tarball...";
-echo "===================================================================";
-
-cd ../;
-tar -xf tarballs/glibc-2.27.tar.xz;
-
-mkdir glibc-build;
-cd glibc-build/;
-
-echo "===================================================================";
-echo "Configuring build flags...";
-echo "===================================================================";
-
-echo "libc_cv_forced_unwind=yes" > config.cache;
-echo "libc_cv_c_cleanup=yes" >> config.cache;
-echo "libc_cv_ssp=no" >> config.cache;
-echo "libc_cv_ssp_strong=no" >> config.cache;
-
-echo "===================================================================";
-echo "building glibc...";
-echo "===================================================================";
-
-BUILD_CC="gcc" CC="${SL_TARGET}-gcc" \
-AR="${SL_TARGET}-ar" \
-RANLIB="${SL_TARGET}-ranlib" CFLAGS="-O2" \
-../glibc-2.27/configure --prefix=/usr \
---host=${SL_TARGET} --build=${SL_HOST} \
---disable-profile --enable-add-ons --with-tls \
---enable-kernel=2.6.32 --with-__thread \
---with-binutils=${SL}/cross-tools/bin \
---with-headers=${SL}/usr/include \
---cache-file=config.cache;
-
-make && make install_root=${SL}/ install;
-
-cd ../;
-
-echo "===================================================================";
-echo "building final gcc...";
-echo "===================================================================";
-
-mkdir gcc-build;
-cd gcc-build/;
-
-AR=ar LDFLAGS="-Wl,-rpath,${SL}/cross-tools/lib" \
-../gcc-7.3.0/configure --prefix=${SL}/cross-tools \
---build=${SL_HOST} --target=${SL_TARGET} \
---host=${SL_HOST} --with-sysroot=${SL} \
---disable-nls --enable-shared \
---enable-languages=c,c++ --enable-c99 \
---enable-long-long \
---with-mpfr-include=$(pwd)/../gcc-7.3.0/mpfr/src \
---with-mpfr-lib=$(pwd)/mpfr/src/.libs \
---disable-multilib --with-arch=${SL_CPU};
-make && make install;
-
-cp -v ${SL}/cross-tools/${SL_TARGET}/lib64/libgcc_s.so.1 ${SL}/lib64;
 
 echo "===================================================================";
 echo "Setting environment vars....";
@@ -408,7 +238,8 @@ export RANLIB="${SL_TARGET}-ranlib";
 export READELF="${SL_TARGET}-readelf";
 export STRIP="${SL_TARGET}-strip";
 
-cd ../
+cd ${SL}/;
+
 
 echo "===================================================================";
 echo "uncompressing busybox tarball...";
@@ -449,11 +280,9 @@ echo "===================================================================";
 
 cp -v /boot/config-$(uname -r) .config;
 
-#make ARCH=${SL_ARCH} \
-#CROSS_COMPILE=${SL_TARGET}- x86_64_defconfig;
-
 make ARCH=${SL_ARCH} \
 CROSS_COMPILE=${SL_TARGET}- menuconfig;
+
 
 make ARCH=${SL_ARCH} \
 CROSS_COMPILE=${SL_TARGET}-;
@@ -538,3 +367,4 @@ echo "===================================================================";
 
 cd ${SL}-copy/;
 sudo tar cfJ ../suckless-build-20223107-nightly.tar.xz *;
+
