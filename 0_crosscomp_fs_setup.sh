@@ -122,7 +122,7 @@ echo "===================================================================";
 echo "create /etc/issue file...";
 echo "===================================================================";
 cat > ${SL}/etc/issue<< "EOF"
-Suckless Linux 1.1
+Suckless Linux 1.2
 Kernel \r on \m
 
 EOF
@@ -222,8 +222,8 @@ set timeout=5
 
 set root=(hd0,1)
 
-menuentry "Suckless Linux 1.1" {
-        linux   /boot/vmlinuz-4.19.253 root=/dev/sda1 ro quiet
+menuentry "Suckless Linux 1.2" {
+        linux   /boot/vmlinuz-5.18.15 root=/dev/sda1 ro quiet
 }
 EOF
 
@@ -252,8 +252,8 @@ echo "===================================================================";
 echo "uncompressing linux tarball...";
 echo "===================================================================";
 
-tar -xf tarballs/linux-4.19.253.tar.xz;
-cd linux-4.19.253/;
+tar -xf tarballs/linux-5.18.15.tar.xz;
+cd linux-5.18.15/;
 
 echo "===================================================================";
 echo "installing kernel standard header files for the cross-compiler...";
@@ -270,7 +270,7 @@ echo "===================================================================";
 echo "uncompressing binutils tarball...";
 echo "===================================================================";
 
-tar -xf tarballs/binutils-2.30.tar.xz;
+tar -xf tarballs/binutils-2.38.tar.xz;
 
 mkdir binutils-build;
 cd binutils-build/;
@@ -279,7 +279,7 @@ echo "===================================================================";
 echo "building binutils...";
 echo "===================================================================";
 
-../binutils-2.30/configure --prefix=${SL}/cross-tools \
+../binutils-2.38/configure --prefix=${SL}/cross-tools \
 --target=${SL_TARGET} --with-sysroot=${SL} \
 --disable-nls --enable-shared --disable-multilib;
 
@@ -287,7 +287,7 @@ make configure-host && make;
 ln -sv lib ${SL}/cross-tools/lib64;
 make install;
 
-cp -v ../binutils-2.30/include/libiberty.h ${SL}/usr/include;
+cp -v ../binutils-2.38/include/libiberty.h ${SL}/usr/include;
 
 
 echo "===================================================================";
@@ -296,18 +296,18 @@ echo "===================================================================";
 
 cd ../;
 
-tar -xf tarballs/gcc-7.3.0.tar.xz;
+tar -xf tarballs/gcc-12.1.0.tar.xz;
 
 echo "===================================================================";
 echo "uncompressing some dependencies...";
 echo "===================================================================";
 
-tar xjf tarballs/gmp-6.1.2.tar.bz2;
-mv gmp-6.1.2 gcc-7.3.0/gmp;
-tar xJf tarballs/mpfr-4.0.1.tar.xz;
-mv mpfr-4.0.1 gcc-7.3.0/mpfr;
-tar xzf tarballs/mpc-1.1.0.tar.gz;
-mv mpc-1.1.0 gcc-7.3.0/mpc;
+tar xjf tarballs/gmp-6.2.1.tar.bz2;
+mv gmp-6.2.1 gcc-12.1.0/gmp;
+tar xJf tarballs/mpfr-4.1.0.tar.xz;
+mv mpfr-4.1.0 gcc-12.1.0/mpfr;
+tar xzf tarballs/mpc-1.2.1.tar.gz;
+mv mpc-1.2.1 gcc-12.1.0/mpc;
 
 mkdir gcc-static;
 cd gcc-static/;
@@ -317,12 +317,12 @@ echo "building statically linked gcc...";
 echo "===================================================================";
 
 AR=ar LDFLAGS="-Wl,-rpath,${SL}/cross-tools/lib" \
-../gcc-7.3.0/configure --prefix=${SL}/cross-tools \
+../gcc-12.1.0/configure --prefix=${SL}/cross-tools \
 --build=${SL_HOST} --host=${SL_HOST} \
 --target=${SL_TARGET} \
 --with-sysroot=${SL}/target --disable-nls \
 --disable-shared \
---with-mpfr-include=$(pwd)/../gcc-7.3.0/mpfr/src \
+--with-mpfr-include=$(pwd)/../gcc-12.1.0/mpfr/src \
 --with-mpfr-lib=$(pwd)/mpfr/src/.libs \
 --without-headers --with-newlib --disable-decimal-float \
 --disable-libgomp --disable-libmudflap --disable-libssp \
@@ -340,7 +340,7 @@ echo "uncompressing GLIBC tarball...";
 echo "===================================================================";
 
 cd ../;
-tar -xf tarballs/glibc-2.27.tar.xz;
+tar -xf tarballs/glibc-2.35.tar.xz;
 
 mkdir glibc-build;
 cd glibc-build/;
@@ -361,7 +361,7 @@ echo "===================================================================";
 BUILD_CC="gcc" CC="${SL_TARGET}-gcc" \
 AR="${SL_TARGET}-ar" \
 RANLIB="${SL_TARGET}-ranlib" CFLAGS="-O2" \
-../glibc-2.27/configure --prefix=/usr \
+../glibc-2.35/configure --prefix=/usr \
 --host=${SL_TARGET} --build=${SL_HOST} \
 --disable-profile --enable-add-ons --with-tls \
 --enable-kernel=2.6.32 --with-__thread \
@@ -381,13 +381,13 @@ mkdir gcc-build;
 cd gcc-build/;
 
 AR=ar LDFLAGS="-Wl,-rpath,${SL}/cross-tools/lib" \
-../gcc-7.3.0/configure --prefix=${SL}/cross-tools \
+../gcc-12.1.0/configure --prefix=${SL}/cross-tools \
 --build=${SL_HOST} --target=${SL_TARGET} \
 --host=${SL_HOST} --with-sysroot=${SL} \
 --disable-nls --enable-shared \
 --enable-languages=c,c++ --enable-c99 \
 --enable-long-long \
---with-mpfr-include=$(pwd)/../gcc-7.3.0/mpfr/src \
+--with-mpfr-include=$(pwd)/../gcc-12.1.0/mpfr/src \
 --with-mpfr-lib=$(pwd)/mpfr/src/.libs \
 --disable-multilib --with-arch=${SL_CPU};
 make && make install;
@@ -414,8 +414,8 @@ echo "===================================================================";
 echo "uncompressing busybox tarball...";
 echo "===================================================================";
 
-tar -xf tarballs/busybox-1.28.3.tar.bz2;
-cd busybox-1.28.3/;
+tar -xf tarballs/busybox-2.38.tar.bz2;
+cd busybox-2.38/;
 
 
 echo "===================================================================";
@@ -438,22 +438,22 @@ echo "===================================================================";
 echo "Uncompressing linux kernel...";
 echo "===================================================================";
 
-tar -xf tarballs/linux-4.19.253.tar.xz;
+tar -xf tarballs/linux-5.18.15.tar.xz;
 
-cd linux-4.19.253/;
+cd linux-5.18.15/;
 
 
 echo "===================================================================";
 echo "building linux kernel...";
 echo "===================================================================";
 
-#cp -v /boot/config-$(uname -r) .config;
+cp -v /boot/config-$(uname -r) .config;
 
 #make ARCH=${SL_ARCH} \
 #CROSS_COMPILE=${SL_TARGET}- x86_64_defconfig;
 
-make ARCH=${SL_ARCH} \
-CROSS_COMPILE=${SL_TARGET}- menuconfig #allmodconfig;
+#make ARCH=${SL_ARCH} \
+#CROSS_COMPILE=${SL_TARGET}- menuconfig #allmodconfig;
 
 make ARCH=${SL_ARCH} \
 CROSS_COMPILE=${SL_TARGET}-;
@@ -462,13 +462,13 @@ make ARCH=${SL_ARCH} \
   CROSS_COMPILE=${SL_TARGET}- \
   INSTALL_MOD_PATH=${SL} modules_install;
 
-cp -v arch/x86/boot/bzImage ${SL}/boot/vmlinuz-4.19.253;
-cp -v System.map ${SL}/boot/System.map-4.19.253;
-cp -v .config ${SL}/boot/config-4.19.253;
+cp -v arch/x86/boot/bzImage ${SL}/boot/vmlinuz-5.18.15;
+cp -v System.map ${SL}/boot/System.map-5.18.15;
+cp -v .config ${SL}/boot/config-5.18.15;
 
 ${SL}/cross-tools/bin/depmod.pl \
-  -F ${SL}/boot/System.map-4.19.253 \
-  -b ${SL}/lib/modules/4.19.253;
+  -F ${SL}/boot/System.map-5.18.15 \
+  -b ${SL}/lib/modules/5.18.15;
 
 cd ../;
 
@@ -537,4 +537,4 @@ echo "packaging OS-image...";
 echo "===================================================================";
 
 cd ${SL}-copy/;
-sudo tar cfJ ../suckless-build-20220108-nightly.tar.xz *;
+sudo tar cfJ ../suckless-build-20220208-nightly.tar.xz *;
