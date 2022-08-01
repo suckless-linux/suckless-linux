@@ -260,7 +260,7 @@ echo "installing kernel standard header files for the cross-compiler...";
 echo "===================================================================";
 
 make mrproper;
-make ARCH=${SL_ARCH} headers_check && \
+#make ARCH=${SL_ARCH} headers_check && \
 make ARCH=${SL_ARCH} INSTALL_HDR_PATH=dest headers_install;
 cp -rv dest/include/* ${SL}/usr/include;
 
