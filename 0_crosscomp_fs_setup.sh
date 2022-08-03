@@ -537,4 +537,4 @@ echo "packaging OS-image...";
 echo "===================================================================";
 
 cd ${SL}-copy/;
-sudo tar cfJ ../suckless-build-20220208-nightly.tar.xz *;
+sudo tar cfJ ../suckless-build-20220308-nightly.tar.xz *;
