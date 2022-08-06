@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 
 ######################################
@@ -13,7 +13,7 @@ echo "setting variables, creating environment...";
 echo "===================================================================";
 set +h;
 umask 022;
-export SL=~/Dokumente/suckless-linux/suckless;
+export SL=~/suckless-linux/suckless;
 mkdir -pv ${SL};
 export LC_ALL=POSIX;
 export PATH=${SL}/cross-tools/bin:/bin:/usr/bin;
@@ -449,6 +449,12 @@ echo "===================================================================";
 
 cp -v /boot/config-$(uname -r) .config;
 
+make ARCH=${SL_ARCH} \
+CROSS_COMPILE=${SL_TARGET}- oldconfig;
+
+make ARCH=${SL_ARCH} \
+CROSS_COMPILE=${SL_TARGET}- prepare;
+
 #make ARCH=${SL_ARCH} \
 #CROSS_COMPILE=${SL_TARGET}- x86_64_defconfig;
 
@@ -537,4 +543,4 @@ echo "packaging OS-image...";
 echo "===================================================================";
 
 cd ${SL}-copy/;
-sudo tar cfJ ../suckless-build-20220308-nightly.tar.xz *;
+sudo tar cfJ ../suckless-nightly.tar.xz *;
