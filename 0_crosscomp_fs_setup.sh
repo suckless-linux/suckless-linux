@@ -21,7 +21,7 @@ export PATH=${SL}/cross-tools/bin:/bin:/usr/bin;
 echo "===================================================================";
 echo "create target filesystem structure...";
 echo "===================================================================";
-mkdir -pv ${SL}/{bin,boot/{,grub},dev,{etc/,}opt,home,lib/{firmware,modules},lib64,mnt};
+mkdir -pv ${SL}/{bin,boot/{,grub2},dev,{etc/,}opt,home,lib/{firmware,modules},lib64,mnt};
 mkdir -pv ${SL}/{proc,media/{floppy,cdrom},sbin,srv,sys};
 mkdir -pv ${SL}/var/{lock,log,mail,run,spool};
 mkdir -pv ${SL}/var/{opt,cache,lib/{misc,locate},local};
@@ -213,9 +213,9 @@ EOF
 
 
 echo "===================================================================";
-echo "create /boot/grub/grub.cfg file...";
+echo "create /boot/grub2/grub.cfg file...";
 echo "===================================================================";
-cat > ${SL}/boot/grub/grub.cfg<< "EOF"
+cat > ${SL}/boot/grub2/grub.cfg<< "EOF"
 
 set default=0
 set timeout=5
@@ -414,8 +414,8 @@ echo "===================================================================";
 echo "uncompressing busybox tarball...";
 echo "===================================================================";
 
-tar -xf tarballs/busybox-1.35.tar.bz2;
-cd busybox-1.35/;
+tar -xf tarballs/busybox-1.35.0.tar.bz2;
+cd busybox-1.35.0/;
 
 
 echo "===================================================================";
@@ -486,9 +486,9 @@ echo "===================================================================";
 echo "configuring and installing target environment...";
 echo "===================================================================";
 
-make DESTDIR ${SL}/ install-bootscripts;
+make DESTDIR=${SL}/ install-bootscripts;
 
-ln -sv ../rc.d/startup ${SL}/etc/init.d/rcS;
+ln -sv clfs/rc.d/startup ${SL}/etc/init.d/rcS;
 
 echo "===================================================================";
 echo "installing zlib...";
