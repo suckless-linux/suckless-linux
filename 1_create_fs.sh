@@ -1,32 +1,21 @@
-#!/bin/sh
+#!/bin/bash
 
+
+######################################
+# script for building suckless-linux #
+#         and cross-compiler         #
+######################################
 
 
 echo "===================================================================";
-echo "Setting environment vars....";
+echo "setting variables, creating environment...";
 echo "===================================================================";
 set +h;
 umask 022;
-export SL=~/Dokumente/suckless-linux/suckless;
+export SL=~/suckless-linux/suckless;
+mkdir -pv ${SL};
 export LC_ALL=POSIX;
 export PATH=${SL}/cross-tools/bin:/bin:/usr/bin;
-unset CFLAGS;
-unset CXXFLAGS;
-export SL_HOST=$(echo ${MACHTYPE} | sed "s/-[^-]*/-cross/");
-export SL_TARGET=x86_64-unknown-linux-gnu;
-export SL_CPU=k8;
-export SL_ARCH=$(echo ${SL_TARGET} | sed -e 's/-.*//' -e 's/i.86/i386/');
-export SL_ENDIAN=little;
-export CC="${SL_TARGET}-gcc";
-export CXX="${SL_TARGET}-g++";
-export CPP="${SL_TARGET}-gcc -E";
-export AR="${SL_TARGET}-ar";
-export AS="${SL_TARGET}-as";
-export LD="${SL_TARGET}-ld";
-export RANLIB="${SL_TARGET}-ranlib";
-export READELF="${SL_TARGET}-readelf";
-export STRIP="${SL_TARGET}-strip";
-
 
 echo "===================================================================";
 echo "create target filesystem structure...";
@@ -46,11 +35,6 @@ for dir in ${SL}/usr{,/local}; do
   ln -sv share/{man,doc,info} ${dir}
 done;
 
-
-echo "===================================================================";
-echo "use symlink to /proc/mounts to maintain a list of mounted filesystems in /etc/mtab...";
-echo "===================================================================";
-ln -svf /proc/mounts ${SL}/etc/mtab;
 
 
 echo "===================================================================";
@@ -126,7 +110,7 @@ echo "===================================================================";
 echo "create /etc/issue file...";
 echo "===================================================================";
 cat > ${SL}/etc/issue<< "EOF"
-Suckless Linux 1.1
+Suckless Linux 1.2
 Kernel \r on \m
 
 EOF
@@ -226,145 +210,26 @@ set timeout=5
 
 set root=(hd0,1)
 
-menuentry "Suckless Linux 1.1" {
-        linux   /boot/vmlinuz-4.19.253 root=/dev/sda1 ro quiet
+menuentry "Suckless Linux 1.2" {
+        linux   /boot/vmlinuz-5.18.15 root=/dev/sda1 ro quiet
 }
 EOF
 
 
 echo "===================================================================";
-echo "initialise logfiles and give proper permissions...";
+echo "uncompressing linux tarball...";
 echo "===================================================================";
 
-touch ${SL}/var/run/utmp ${SL}/var/log/{btmp,lastlog,wtmp};
-chmod -v 664 ${SL}/var/run/utmp ${SL}/var/log/lastlog;
-
-#unneccessary?? cd ${SL}/;
+tar -xf tarballs/linux-5.18.15.tar.xz;
+cd linux-5.18.15/;
 
 echo "===================================================================";
-echo "uncompressing busybox tarball...";
+echo "installing kernel standard header files for the cross-compiler...";
 echo "===================================================================";
 
-tar -xf tarballs/busybox-1.28.3.tar.bz2;
-cd busybox-1.28.3/;
-
-
-echo "===================================================================";
-echo "building busybox...";
-echo "===================================================================";
-
-make CROSS_COMPILE="${SL_TARGET}-" defconfig;
-#make CROSS_COMPILE="${SL_TARGET}-" menuconfig;
-
-make CROSS_COMPILE="${SL_TARGET}-";
-make CROSS_COMPILE="${SL_TARGET}-" \
-CONFIG_PREFIX="${SL}" install;
-
-cp -v examples/depmod.pl ${SL}/cross-tools/bin;
-chmod 755 ${SL}/cross-tools/bin/depmod.pl;
+make mrproper;
+#make ARCH=${SL_ARCH} headers_check && \
+make ARCH=${SL_ARCH} INSTALL_HDR_PATH=dest headers_install;
+cp -rv dest/include/* ${SL}/usr/include;
 
 cd ../;
-
-echo "===================================================================";
-echo "Uncompressing linux kernel...";
-echo "===================================================================";
-
-tar -xf tarballs/linux-4.19.253.tar.xz;
-
-cd linux-4.19.253/;
-
-
-echo "===================================================================";
-echo "building linux kernel...";
-echo "===================================================================";
-
-cp -v /boot/config-$(uname -r) .config;
-
-make ARCH=${SL_ARCH} \
-CROSS_COMPILE=${SL_TARGET}- allyesconfig; #menuconfig;
-
-
-make ARCH=${SL_ARCH} \
-CROSS_COMPILE=${SL_TARGET}-;
-
-make ARCH=${SL_ARCH} \
-  CROSS_COMPILE=${SL_TARGET}- \
-  INSTALL_MOD_PATH=${SL} modules_install;
-
-cp -v arch/x86/boot/bzImage ${SL}/boot/vmlinuz-4.19.253;
-cp -v System.map ${SL}/boot/System.map-4.19.253;
-cp -v .config ${SL}/boot/config-4.19.253;
-
-${SL}/cross-tools/bin/depmod.pl \
-  -F ${SL}/boot/System.map-4.19.253 \
-  -b ${SL}/lib/modules/4.19.253;
-
-cd ../;
-
-
-echo "===================================================================";
-echo "decompressing CLFS-Bootscripts...";
-echo "===================================================================";
-
-tar -xf tarballs/clfs-embedded-bootscripts-1.0-pre5.tar.bz2;
-
-cd clfs-embedded-bootscripts-1.0-pre5;
-
-
-echo "===================================================================";
-echo "configuring and installing target environment...";
-echo "===================================================================";
-
-make DESTDIR ${SL}/ install-bootscripts;
-
-ln -sv ../rc.d/startup ${SL}/etc/init.d/rcS;
-
-echo "===================================================================";
-echo "installing zlib...";
-echo "===================================================================";
-
-cd ../;
-tar -xf tarballs/zlib-1.2.11.tar.gz;
-cd zlib-1.2.11/;
-
-sed -i 's/-O3/-Os/g' configure;
-./configure --prefix=/usr --shared;
-make && make DESTDIR=${SL}/ install;
-
-mv -v ${SL}/usr/lib/libz.so.* ${SL}/lib;
-ln -svf ../../lib/libz.so.1 ${SL}/usr/lib/libz.so;
-ln -svf ../../lib/libz.so.1 ${SL}/usr/lib/libz.so.1;
-ln -svf ../lib/libz.so.1 ${SL}/lib64/libz.so.1;
-
-
-echo "===================================================================";
-echo "Installing target image...";
-echo "===================================================================";
-
-cd ../;
-
-cp -rf ${SL}/ ${SL}-copy;
-rm -rfv ${SL}-copy/cross-tools;
-rm -rfv ${SL}-copy/usr/src/*;
-
-FILES="$(ls ${SL}-copy/usr/lib64/*.a)";
-for file in $FILES; do
-  rm -f $file;
-done;
-
-find ${SL}-copy/{,usr/}{bin,lib,sbin} -type f -exec sudo strip --strip-debug '{}' ';';
-find ${SL}-copy/{,usr/}lib64 -type f -exec sudo strip --strip-debug '{}' ';';
-
-sudo chown -R root:root ${SL}-copy;
-sudo chgrp 13 ${SL}-copy/var/run/utmp ${SL}-copy/var/log/lastlog;
-sudo mknod -m 0666 ${SL}-copy/dev/null c 1 3;
-sudo mknod -m 0600 ${SL}-copy/dev/console c 5 1;
-sudo chmod 4755 ${SL}-copy/bin/busybox;
-
-echo "===================================================================";
-echo "packaging OS-image...";
-echo "===================================================================";
-
-cd ${SL}-copy/;
-sudo tar cfJ ../suckless-build-20223107-nightly.tar.xz *;
-
