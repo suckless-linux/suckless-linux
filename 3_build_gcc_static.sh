@@ -76,7 +76,7 @@ AR=ar LDFLAGS="-Wl,-rpath,${SL}/cross-tools/lib" \
 --disable-threads --enable-languages=c,c++ \
 --disable-multilib --with-arch=${SL_CPU};
 
-make all-gcc all-target-libgcc && \
+make all-gcc all-target-libgcc -j4 && \
 make install-gcc install-target-libgcc;
 
 ln -vs libgcc.a `${SL_TARGET}-gcc -print-libgcc-file-name | sed 's/libgcc/&_eh/'`;
