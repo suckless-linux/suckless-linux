@@ -29,8 +29,6 @@ install -dv ${SL}/cross-tools{,/bin};
 echo "===================================================================";
 echo "use symlink to /proc/mounts to maintain a list of mounted filesystems in /etc/mtab...";
 echo "===================================================================";
-ln -svf /proc/mounts ${SL}/etc/mtab;
-
 
 
 echo "===================================================================";

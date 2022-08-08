@@ -46,7 +46,7 @@ for dir in ${SL}/usr{,/local}; do
   ln -sv share/{man,doc,info} ${dir}
 done;
 
-
+ln -svf /proc/mounts ${SL}/etc/mtab;
 
 echo "===================================================================";
 echo "create /etc/passwd file...";
