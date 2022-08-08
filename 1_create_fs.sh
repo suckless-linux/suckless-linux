@@ -16,6 +16,15 @@ export SL=~/suckless-linux/suckless;
 mkdir -pv ${SL};
 export LC_ALL=POSIX;
 export PATH=${SL}/cross-tools/bin:/bin:/usr/bin;
+unset CFLAGS;
+unset CXXFLAGS;
+
+export SL_HOST=$(echo ${MACHTYPE} | sed "s/-[^-]*/-cross/");
+export SL_TARGET=x86_64-unknown-linux-gnu;
+export SL_CPU=k8;
+export SL_ARCH=$(echo ${SL_TARGET} | sed -e 's/-.*//' -e 's/i.86/i386/');
+export SL_ENDIAN=little;
+
 
 echo "===================================================================";
 echo "create target filesystem structure...";
