@@ -26,8 +26,8 @@ echo "===================================================================";
 echo "prepare for building cross-compiler...";
 echo "===================================================================";
 
-unset CFLAGS;
-unset CXXFLAGS;
+#unset CFLAGS;
+#unset CXXFLAGS;
 
 export SL_HOST=$(echo ${MACHTYPE} | sed "s/-[^-]*/-cross/");
 export SL_TARGET=x86_64-unknown-linux-gnu;
