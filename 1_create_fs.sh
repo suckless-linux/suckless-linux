@@ -12,7 +12,7 @@ echo "setting variables, creating environment...";
 echo "===================================================================";
 set +h;
 set -e;
-set -h;
+set -x;
 umask 022;
 export SL=~/suckless-linux/suckless;
 mkdir -pv ${SL};
