@@ -70,7 +70,7 @@ RANLIB="${SL_TARGET}-ranlib" CFLAGS="-O2" \
 --with-headers=${SL}/usr/include \
 --cache-file=config.cache;
 
-make && make install_root=${SL}/ install;
+make -j4 && make install_root=${SL}/ install;
 
 cd ../;
 
