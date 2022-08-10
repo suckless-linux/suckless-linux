@@ -73,7 +73,7 @@ cp -v ../kernel-config .config;
 #make ARCH=${SL_ARCH} \
 #CROSS_COMPILE=${SL_TARGET}- prepare;
 
-make ARCH=${SL_ARCH} \
+make -j4 ARCH=${SL_ARCH} \
 CROSS_COMPILE=${SL_TARGET}-;
 
 make ARCH=${SL_ARCH} \
