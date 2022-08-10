@@ -1,3 +1,9 @@
+# ignore tarballs dir
+tarballs/*
+
+# ignore suckless-directory
+suckless/*
+
 # Prerequisites
 *.d
 
