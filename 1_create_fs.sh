@@ -222,7 +222,7 @@ set timeout=5
 set root=(hd0,1)
 
 menuentry "Suckless Linux 1.2" {
-        linux   /boot/vmlinuz-5.18.15 root=/dev/sda1 ro quiet
+        linux   /boot/vmlinuz-5.18.15 root=UUID=a93989cd-b5dc-4cca-b746-80b882a9f08a ro quiet
 }
 EOF
 
