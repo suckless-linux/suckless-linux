@@ -63,7 +63,7 @@ echo "building busybox...";
 echo "===================================================================";
 
 make CROSS_COMPILE="${SL_TARGET}-" defconfig;
-#make CROSS_COMPILE="${SL_TARGET}-" menuconfig;
+make CROSS_COMPILE="${SL_TARGET}-" menuconfig;
 
 make CROSS_COMPILE="${SL_TARGET}-";
 make CROSS_COMPILE="${SL_TARGET}-" \

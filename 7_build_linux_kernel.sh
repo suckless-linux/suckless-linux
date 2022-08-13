@@ -64,14 +64,25 @@ echo "===================================================================";
 echo "building linux kernel...";
 echo "===================================================================";
 
+## Copy current linux kernel config to suckless
 #cp -v /boot/config-$(uname -r) .config;
-cp -v ../kernel-config .config;
+#cp -v ../kernel-config .config;
 
+## For porting an older kernel config to a new version
 #make ARCH=${SL_ARCH} \
 #CROSS_COMPILE=${SL_TARGET}- oldconfig;
 
 #make ARCH=${SL_ARCH} \
 #CROSS_COMPILE=${SL_TARGET}- prepare;
+
+## start with default config and add drivers in ncurses menu
+
+make -j4 ARCH=${SL_ARCH} \
+CROSS_COMPILE=${SL_TARGET}- x86_64_defconfig;
+
+
+make -j4 ARCH=${SL_ARCH} \
+CROSS_COMPILE=${SL_TARGET}- menuconfig;
 
 make -j4 ARCH=${SL_ARCH} \
 CROSS_COMPILE=${SL_TARGET}-;
