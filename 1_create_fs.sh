@@ -121,7 +121,7 @@ echo "===================================================================";
 echo "create /etc/issue file...";
 echo "===================================================================";
 cat > ${SL}/etc/issue<< "EOF"
-Suckless Linux 1.2
+Suckless Linux 1.2.1
 Kernel \r on \m
 
 EOF
@@ -225,6 +225,12 @@ menuentry "Suckless Linux 1.2" {
         linux   /boot/vmlinuz-5.18.15 root=UUID=a93989cd-b5dc-4cca-b746-80b882a9f08a ro quiet
 }
 EOF
+
+
+# init logfiles and set permissiona
+
+touch ${SL}/var/run/utmp ${SL}/var/log/{btmp,lastlog,wtmp};
+chmod -v 664 ${SL}/var/run/utmp ${SL}/var/log/lastlog;
 
 
 echo "===================================================================";
