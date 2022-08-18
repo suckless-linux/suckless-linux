@@ -1,2 +1,6 @@
+## target tarballs downloaded during build process
 sources/*
 
+## cross-compiler toolchain
+
+tools/*
