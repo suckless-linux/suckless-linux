@@ -1607,4 +1607,6 @@ install -vDm644 misc/zsh-completion  /usr/share/zsh/site-functions/_ninja
 
 cd ..
 
+tar -xf meson-0.61.1.tar.gz && cd meson-0.61.1
+
 
