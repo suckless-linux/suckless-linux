@@ -1367,4 +1367,199 @@ tar -xf gdbm-1.23.tar.gz && cd gdbm-1.23
 
 make && make check
 
+make install
+
+cd ..
+
+tar -xf gperf-3.1.tar.gz && cd gperf-3.1
+
+./configure --prefix=/usr --docdir=/usr/share/doc/gperf-3.1
+
+make && make -j1 check
+
+make install
+
+cd ..
+
+tar -xf expat-2.4.6.tar.xz && cd expat-2.4.6
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/expat-2.4.6
+
+make && make check
+
+make install
+
+install -v -m644 doc/*.{html,css} /usr/share/doc/expat-2.4.6
+
+cd ..
+
+tar -xf inetutils-2.2.tar.xz && cd inetutils-2.2
+
+./configure --prefix=/usr        \
+            --bindir=/usr/bin    \
+            --localstatedir=/var \
+            --disable-logger     \
+            --disable-whois      \
+            --disable-rcp        \
+            --disable-rexec      \
+            --disable-rlogin     \
+            --disable-rsh        \
+            --disable-servers
+
+make && make check
+
+make install
+
+mv -v /usr/{,s}bin/ifconfig
+
+cd ..
+
+tar -xf less-590.tar.gz && cd less-590
+
+./configure --prefix=/usr --sysconfdir=/etc
+
+make
+
+make install
+
+cd ..
+
+tar -xf perl-5.34.0.tar.xz && cd perl-5.34.0
+
+patch -Np1 -i ../perl-5.34.0-upstream_fixes-1.patch
+
+export BUILD_ZLIB=False
+export BUILD_BZIP2=0
+
+sh Configure -des                                         \
+             -Dprefix=/usr                                \
+             -Dvendorprefix=/usr                          \
+             -Dprivlib=/usr/lib/perl5/5.34/core_perl      \
+             -Darchlib=/usr/lib/perl5/5.34/core_perl      \
+             -Dsitelib=/usr/lib/perl5/5.34/site_perl      \
+             -Dsitearch=/usr/lib/perl5/5.34/site_perl     \
+             -Dvendorlib=/usr/lib/perl5/5.34/vendor_perl  \
+             -Dvendorarch=/usr/lib/perl5/5.34/vendor_perl \
+             -Dman1dir=/usr/share/man/man1                \
+             -Dman3dir=/usr/share/man/man3                \
+             -Dpager="/usr/bin/less -isR"                 \
+             -Duseshrplib                                 \
+             -Dusethreads
+
+make && make test
+
+make install
+
+unset BUILD_ZLIB BUILD_BZIP2
+
+cd ..
+
+tar -xf XML-Parser-2.46.tar.gz && cd XML-Parser-2.46
+
+perl Makefile.PL
+
+make && make test 
+
+make install
+
+cd ..
+
+tar -xf intltool-0.51.0.tar.gz && cd intltool-0.51.0
+
+sed -i 's:\\\${:\\\$\\{:' intltool-update.in
+
+./configure --prefix=/usr
+
+make && make check
+
+make install
+install -v -Dm644 doc/I18N-HOWTO /usr/share/doc/intltool-0.51.0/I18N-HOWTO
+
+cd ..
+
+tar -xf autoconf-2.71.tar.xz && cd autoconf-2.71
+
+./configure --prefix=/usr
+
+make && make check
+
+make install
+
+cd ..
+
+tar -xf automake-1.16.5.tar.xz && cd automake-1.16.5
+
+./configure --prefix=/usr --docdir=/usr/share/doc/automake-1.16.5
+
+make && make -j4 check
+
+make install
+
+cd ..
+
+tar -xf openssl-3.0.1.tar.gz && cd openssl-3.0.1
+
+./config --prefix=/usr         \
+         --openssldir=/etc/ssl \
+         --libdir=lib          \
+         shared                \
+         zlib-dynamic
+
+make && make test
+
+sed -i '/INSTALL_LIBS/s/libcrypto.a libssl.a//' Makefile
+make MANSUFFIX=ssl install
+
+mv -v /usr/share/doc/openssl /usr/share/doc/openssl-3.0.1
+cp -vfr doc/* /usr/share/doc/openssl-3.0.1
+
+cd ..
+
+tar -xf kmod-29.tar.xz && cd kmod-29
+
+./configure --prefix=/usr          \
+            --sysconfdir=/etc      \
+            --with-openssl         \
+            --with-xz              \
+            --with-zstd            \
+            --with-zlib
+
+make
+
+make install
+
+
+for target in depmod insmod modinfo modprobe rmmod; do
+  ln -sfv ../bin/kmod /usr/sbin/$target
+done
+
+ln -sfv kmod /usr/bin/lsmod
+
+cd ..
+
+tar -xf elfutils-0.186.tar.bz2 && cd elfutils-0.186
+
+./configure --prefix=/usr                \
+            --disable-debuginfod         \
+            --enable-libdebuginfod=dummy
+
+make && make check
+
+make -C libelf install
+install -vm644 config/libelf.pc /usr/lib/pkgconfig
+rm /usr/lib/libelf.a
+
+cd ..
+
+tar -xf libffi-3.4.2.tar.gz && cd libffi-3.4.2
+
+./configure --prefix=/usr          \
+            --disable-static       \
+            --with-gcc-arch=native \
+            --disable-exec-static-tramp
+
+make && make check
+
 
