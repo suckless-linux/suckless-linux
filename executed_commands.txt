@@ -1903,4 +1903,12 @@ meson --prefix=/usr                 \
 
 ninja && ninja install
 
+tar -xf ../../systemd-man-pages-250.tar.xz --strip-components=1 -C /usr/share/man
+
+rm -rf /usr/lib/pam.d
+systemd-machine-id-setup
+systemctl preset-all
+
+cd ..
+
 
