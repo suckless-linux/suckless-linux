@@ -2074,3 +2074,58 @@ find /usr -depth -name $(uname -m)-lfs-linux-gnu\* | xargs rm -rf
 userdel -r tester
 
 
+
+
+ln -s /dev/null /etc/systemd/network/99-default.link
+
+cat > /etc/systemd/network/10-eth-static.network << "EOF"
+[Match]
+Name=wlan0
+
+[Network]
+Address=192.168.0.2/24
+Gateway=192.168.0.1
+DNS=192.168.0.1
+Domains=suckless-live
+EOF
+
+cat > /etc/systemd/network/10-eth-dhcp.network << "EOF"
+[Match]
+Name=wlan0
+
+[Network]
+DHCP=ipv4
+
+[DHCP]
+UseDomains=true
+EOF
+
+echo "suckless-live" > /etc/hostname
+
+cat > /etc/hosts << "EOF"
+# Begin /etc/hosts
+
+127.0.0.1 localhost.localdomain localhost
+127.0.1.1 suckless.live.system suckless-live
+10.0.0.1 suckless.live.system suckless-live suckless
+::1       localhost ip6-localhost ip6-loopback
+ff02::1   ip6-allnodes
+ff02::2   ip6-allrouters
+
+# End /etc/hosts
+EOF
+
+
+#cat > /etc/adjtime << "EOF"
+#0.0 0 0.0
+#0
+#LOCAL
+#EOF
+
+
+cat > /etc/vconsole.conf << "EOF"
+KEYMAP=de-latin1
+FONT=Lat2-Terminus16
+EOF
+
+
