@@ -2205,3 +2205,17 @@ cat > /etc/fstab << "EOF"
 EOF
 
 
+
+
+cd /sources
+
+rm -rf linux-5.16.9 && tar -xf linux-5.16.9.tar.xz && cd linux-5.16.9
+
+make mrproper
+
+# after copying the kernel config
+make menuconfig
+
+make
+
+
