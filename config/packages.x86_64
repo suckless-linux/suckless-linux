@@ -128,13 +128,11 @@ wget
 git
 mesa
 xf86-video-intel
-xf86-video-noveau
 xorg-server
 xorg-apps
 xorg-xinit
 xterm
 xorg-fonts-100dpi
-xorg-fonts-75-dpi
 autorandr
 sddm
 plasma
