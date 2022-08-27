@@ -1,0 +1,11 @@
+NAME=Suckless-Linux
+ID=suckless-linux
+ID_LIKE=arch
+BUILD_ID=rolling
+ANSI_COLOR="0;36"
+HOME_URL="https://github.com/suckless-linux/suckless-linux"
+SUPPORT_URL="https://github.com/suckless-linux/suckless-linux"
+BUG_REPORT_URL="https://github.com/suckless-linux/suckless-linux"
+LOGO=arcolinux-hello
+
+

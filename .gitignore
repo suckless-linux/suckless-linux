@@ -1,6 +1,7 @@
-## target tarballs downloaded during build process
-sources/*
+# archiso repository
+archiso/*
+# temporary files
+suckless-tmp/*
 
-## cross-compiler toolchain
-
-tools/*
+# destination dir
+out/*
