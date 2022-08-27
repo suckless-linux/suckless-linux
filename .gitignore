@@ -1,2 +1,7 @@
 # archiso repository
 archiso/*
+# temporary files
+suckless-tmp/*
+
+# destination dir
+out/*
