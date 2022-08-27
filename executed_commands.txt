@@ -2246,10 +2246,10 @@ set default=0
 set timeout=5
 
 insmod ext2
-set root=(hd1,1)
+set root=(hd0,1)
 
 menuentry "GNU/Linux, Linux 5.16.9-suckless-11.0" {
-        linux   /boot/vmlinuz-5.16.9-suckless-11.0 root=/dev/sdb1 ro
+        linux   /boot/vmlinuz-5.16.9-suckless-11.0 root=/dev/sda1 ro
 }
 EOF
 
