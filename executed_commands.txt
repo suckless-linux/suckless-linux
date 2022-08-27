@@ -2218,4 +2218,56 @@ make menuconfig
 
 make
 
+make modules_install
+
+cp -iv arch/x86/boot/bzImage /boot/vmlinuz-5.16.9-suckless-11.0
+cp -iv System.map /boot/System.map-5.16.9
+cp -iv .config /boot/config-5.16.9
+
+install -d /usr/share/doc/linux-5.16.9
+cp -r Documentation/* /usr/share/doc/linux-5.16.9
+
+install -v -m755 -d /etc/modprobe.d
+
+cat > /etc/modprobe.d/usb.conf << "EOF"
+# Begin /etc/modprobe.d/usb.conf
+
+install ohci_hcd /sbin/modprobe ehci_hcd ; /sbin/modprobe -i ohci_hcd ; true
+install uhci_hcd /sbin/modprobe ehci_hcd ; /sbin/modprobe -i uhci_hcd ; true
+
+# End /etc/modprobe.d/usb.conf
+EOF
+
+cd ../..
+
+cat > /boot/grub/grub.cfg << "EOF"
+# Begin /boot/grub/grub.cfg
+set default=0
+set timeout=5
+
+insmod ext2
+set root=(hd1,1)
+
+menuentry "GNU/Linux, Linux 5.16.9-suckless-11.0" {
+        linux   /boot/vmlinuz-5.16.9-suckless-11.0 root=/dev/sdb1 ro
+}
+EOF
+
+echo 11.1-systemd > /etc/lfs-release
+
+cat > /etc/lsb-release << "EOF"
+DISTRIB_ID="Suckless Linux"
+DISTRIB_RELEASE="11.0"
+DISTRIB_CODENAME="Lucy Mielke"
+DISTRIB_DESCRIPTION="Suckless Linux"
+EOF
+
+cat > /etc/os-release << "EOF"
+NAME="Suckless Linux"
+VERSION="11.1-systemd"
+ID=lfs
+PRETTY_NAME="Suckless Linux 11.0"
+VERSION_CODENAME="Lucy"
+EOF
+
 
