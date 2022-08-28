@@ -5,3 +5,6 @@ suckless-tmp/*
 
 # destination dir
 out/*
+
+# sourceforge upload-script
+upload.sh
