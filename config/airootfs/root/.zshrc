@@ -1,5 +1,5 @@
 ### AUTORUN ###
-startx
+#startx
 
 
 ### ALIASES ###
