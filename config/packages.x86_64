@@ -33,9 +33,6 @@ grml-zsh-config
 grub
 hdparm
 intel-ucode
-ipw2100-fw
-ipw2200-fw
-irssi
 iw
 iwd
 jfsutils
@@ -68,7 +65,6 @@ nvme-cli
 open-iscsi
 open-vm-tools
 openconnect
-openssh
 parted
 partimage
 pcsclite
@@ -77,7 +73,6 @@ qemu-guest-agent
 refind
 reflector
 rp-pppoe
-rsync
 screen
 sdparm
 sg3_utils
@@ -86,9 +81,7 @@ squashfs-tools
 sudo
 syslinux
 systemd-resolvconf
-tcpdump
 terminus-font
-testdisk
 tpm2-tss
 udftools
 usb_modeswitch

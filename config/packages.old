@@ -12,7 +12,6 @@ darkhttpd
 ddrescue
 dhclient
 dhcpcd
-diffutils
 dmidecode
 dmraid
 dnsmasq
@@ -47,7 +46,6 @@ libusb-compat
 linux
 linux-atm
 linux-firmware
-linux-firmware-marvell
 livecd-sounds
 lsscsi
 lvm2
@@ -59,7 +57,6 @@ memtest86+
 mkinitcpio
 mkinitcpio-archiso
 mkinitcpio-nfs-utils
-modemmanager
 mtools
 nano
 nbd
@@ -72,12 +69,9 @@ open-iscsi
 open-vm-tools
 openconnect
 openssh
-partclone
 parted
 partimage
 pcsclite
-ppp
-pptpclient
 pv
 qemu-guest-agent
 refind
@@ -126,3 +120,4 @@ kde-applications
 plasma-nm
 ttf-dejavu
 ttf-liberation
+networkmanager
